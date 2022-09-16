@@ -2,6 +2,7 @@ import axios from "axios";
 
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/auth.context";
+import { Link } from "react-router-dom";
 
 const API_URL = "http://localhost:5005";
 
@@ -23,11 +24,11 @@ function ProjectsPage() {
 
 	const getPosts = () => {
 		axios
-			.get(`${API_URL}/post`, {
-				headers: { Authorization: `Bearer ${storedToken}` },
-			})
+			.get(`${API_URL}/post`,{
+				headers: { Authorization: `Bearer ${storedToken}` }})
 			.then((response) => {
 				setPosts(response.data.posts);
+				
 			})
 			.catch((err) => {
 				console.log(err);
@@ -38,11 +39,12 @@ function ProjectsPage() {
 		e.preventDefault();
 
 		const info = { title, description };
+		console.log(info)
 
 		axios
-			.post(`${API_URL}/post/create-post`, {
+			.post(`${API_URL}/post/create-post`,info, {
 				headers: { Authorization: `Bearer ${storedToken}` },
-				info,
+				
 			})
 			.then((response) => {
 				console.log(response);
@@ -58,7 +60,9 @@ function ProjectsPage() {
 
 	useEffect(() => {
 		getPosts();
+		console.log(posts)
 	}, []);
+	
 
 	return (
 		<div>
@@ -68,10 +72,18 @@ function ProjectsPage() {
 						<div key={post._id}>
 							<p>{post.title}</p>
 							<p>{post.description}</p>
-							<button
+							{ <Link to={`/posts`}
+       
+              style={{ textDecoration: 'none' }}
+            >
+
+<button
 								onClick={() => {
 									axios
-										.delete(`${API_URL}/post/delete/${post._id}`)
+										.get(`${API_URL}/post/delete/${post._id}`,{
+											headers: { Authorization: `Bearer ${storedToken}` },
+											
+								})
 										.then(() => {
 											getPosts();
 										})
@@ -80,6 +92,29 @@ function ProjectsPage() {
 							>
 								delete
 							</button>
+			</Link> }
+			
+					
+{/* 
+<form>
+
+							<button
+								onClick={() => {
+									axios
+										.get(`${API_URL}/post/delete/${post._id}`,{
+											headers: { Authorization: `Bearer ${storedToken}` },
+											
+								})
+										.then(() => {
+											getPosts();
+										})
+										.catch((err) => console.log(err));
+								}}
+							>
+								delete
+							</button>
+							</form> */}
+							
 						</div>
 					);
 				})}
